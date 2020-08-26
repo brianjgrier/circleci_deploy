@@ -1,0 +1,25 @@
+{
+    "schemaVersion": "1.2",
+    "description": "Draining Node",
+    "parameters":{  
+      "nodename":{  
+        "type":"String",
+        "description":"Specify the Node name to drain"
+      }
+    },
+    "runtimeConfig": {
+      "aws:runShellScript": {
+        "properties": [
+          {
+            "id": "0.aws:runShellScript",
+            "runCommand": [
+              "#!/bin/bash",
+              "nomad node drain -enable -self -y",
+              "isEligible=$(nomad node-status -self -json | jq '.SchedulingEligibility | contains (\"ineligible\")')",
+              "if (( ${isEligible} == true )) ; then exit 0 ; else exit 129; fi"
+            ]
+          }
+        ]
+      }
+    }
+  }
